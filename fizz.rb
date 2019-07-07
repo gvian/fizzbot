@@ -1,10 +1,5 @@
-#
-# Ruby automated fizzbot example
-#
-# Can you write a program that passes the fizzbot test?
-#
-require "net/http"
-require "json"
+require 'net/http'
+require 'json'
 
 def main
   # get started
@@ -20,21 +15,34 @@ def main
   answer_result = send_answer(first_question_path, 'Ruby')
 
   # Answer each question, as log as we are correct
-  while answer_result['result'] == 'correct' do
+  while answer_result['result'] == 'correct'
     # get the next question
     question_path = answer_result['nextQuestion']
     question = get_json(question_path)
 
     # your code to figure out the answer goes here
-    answer = 'This is incorrect!'
+    msg = question['message']
+    rules = question['rules']
+    answer = ''
+    question['numbers'].each do |n|
+      answer += get_answer(rules, n) + ' '
+    end
 
     # send it to fizzbot
     answer_result = send_answer(question_path, answer)
   end
 end
 
+def get_answer(rules, n)
+  response = ''
+  rules.each do |rule|
+    response += rule['response'] if (n % rule['number']).zero?
+  end
+  response == '' ? n.to_s : response
+end
+
 def send_answer(path, answer)
-  post_json(path, { :answer => answer })
+  post_json(path, answer: answer[0..-2])
 end
 
 # get data from the api and parse it into a ruby hash
@@ -69,7 +77,7 @@ def post_json(path, body)
 end
 
 def build_uri(path)
-  URI.parse("https://api.noopschallenge.com" + path)
+  URI.parse('https://api.noopschallenge.com' + path)
 end
 
-main()
+main
