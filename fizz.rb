@@ -21,7 +21,6 @@ def main
     question = get_json(question_path)
 
     # your code to figure out the answer goes here
-    msg = question['message']
     rules = question['rules']
     answer = ''
     question['numbers'].each do |n|
